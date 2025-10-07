@@ -20,7 +20,6 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sessionId INTEGER NOT NULL,
     name TEXT NOT NULL,
-    isEditor BOOLEAN NOT NULL DEFAULT 0,
     attendanceCode TEXT NOT NULL,
     FOREIGN KEY(sessionId) REFERENCES sessions(id)
   );

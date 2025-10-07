@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors');
 const port = 3000;
 const db = require('./data/db');
+const { parse } = require('path');
 
 app.use(cors())
 app.use(express.json())
@@ -40,8 +41,6 @@ app.post('/sessions', (req, res) => {
   const managementCode = Math.random().toString(36).substring(2,8)
   const privateCode = isPublic ? null : Math.random().toString(36).substring(2,8);
 
-  
-
   const insert = db.prepare(`
     INSERT INTO sessions (title, description, category, date, time, maxParticipants, isPublic, managementCode, privateCode)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -69,10 +68,90 @@ app.post('/sessions', (req, res) => {
 
 
 // PUT /sessions/:id → edit a session (requires management code)
+app.put('/sessions/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, description, category, date, time, maxParticipants, isPublic, managementCode } = req.body
+
+  const update = db.prepare(`
+    UPDATE sessions
+    SET title = ?, description = ? , category = ? , date = ? , time = ? , maxParticipants =? , isPublic = ?
+    WHERE id = ? AND managementCode = ?
+    `)
+
+  const result = update.run(
+    title,
+    description,
+    category,
+    date,
+    time,
+    maxParticipants,
+    isPublic,
+    id, 
+    managementCode
+  )
+
+  if (result.changes > 0) {
+  res.json({ success: true, message: 'Session updated' });
+} else {
+  res.status(403).json({ error: 'Invalid management code or session not found' });
+}
+})
 
 // DELETE /sessions/:id → delete a session (requires management code)
+app.delete('/sessions/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  const { managementCode } = req.body
+
+  const deleteSession = db.prepare('DELETE FROM sessions WHERE id = ? AND managementCode = ? ')
+  const result = deleteSession.run(id, managementCode)
+
+  if (result.changes > 0) {
+    res.status(204).send()
+  } else {
+    res.status(404).json({ error: 'Session not found' })
+  }
+})
 
 // Participants
 // 6. POST /sessions/:id/join → join a session (generates attendance code)
+app.post('/sessions/:id/join', (req,res) =>{
+  const id = parseInt(req.params.id);
+  const attendanceCode = Math.random().toString(36).substring(2,8);
+  const { name } = req.body
+  const insert = db.prepare(`
+    INSERT INTO participants (sessionId, name, attendanceCode) VALUES (?, ?, ?)
+    `)
+
+    const result = insert.run(
+      id,
+      name,
+      attendanceCode
+    )
+
+    res.status(201).json({
+    success: true,
+    message: 'Joined session successfully',
+    attendanceCode
+  });
+});
+
 // 7. DELETE /sessions/:id/leave → leave a session using attendance code
+app.delete('/sessions/:id/leave', (req,res) =>{
+  const id = parseInt(req.params.id);
+  const { name, attendanceCode } = req.body
+  const deleteParticipant = db.prepare(`
+    DELETE participants WHERE id = ? AND name = ? AND attendanceCode = ?
+    `)
+
+    const result = deleteParticipant(id)
+
+
+   if (result.changes > 0) {
+    res.status(204).send() 
+   } else {
+    res.status(404).json({error: 'Could not leave the event'})
+   }
+  });
+
+
 // 8. DELETE /sessions/:id/remove → remove a participant (requires management code)
