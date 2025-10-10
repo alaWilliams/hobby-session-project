@@ -1,9 +1,10 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const cors = require('cors');
 const port = 3000;
 const db = require('./data/db');
 const { parse } = require('path');
+const { error } = require('console');
 
 app.use(cors())
 app.use(express.json())
@@ -22,16 +23,29 @@ app.get('/sessions', (req, res) => {
 // GET /sessions/:id → get details of one session
 app.get('/sessions/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const session = db.prepare('SELECT * FROM sessions WHERE id = ?').get(id)
-  
-  if (session) {
-    res.json(session)
-  } else {
-    res.status(404).json({
-      error: 'Session not found'
-    })
+ const session = db.prepare('SELECT * FROM sessions WHERE id = ?').get(sessionId);
+
+  if (!session) {
+    return res.status(404).json({ error: 'Session not found' });
   }
-})
+  const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(sessionId);
+
+  session.currentParticipants = countResult.currentParticipants;
+
+  res.json(session);
+});
+
+// GET /sessions/private/:code → get details of a private session
+app.get('/sessions/:sessionId/:code', (req, res) => {
+  const code = req.params.code;
+  const session = db.prepare('SELECT * FROM sessions WHERE privateCode = ?').get(code);
+const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(session.id);
+  session.currentParticipants = countResult.currentParticipants;
+  if (!session) return res.status(404).json({ error: 'Session not found' });
+
+  
+  res.json(session);
+});
 
 
 // POST /sessions → create a new session (and generate a management code)
@@ -52,8 +66,8 @@ app.post('/sessions', (req, res) => {
     category,
     date,
     time,
-    maxParticipants,
-    isPublic,
+    Number(maxParticipants),
+    isPublic ? 1 : 0,
     managementCode, 
     privateCode
   )
@@ -70,13 +84,31 @@ app.post('/sessions', (req, res) => {
 // PUT /sessions/:id → edit a session (requires management code)
 app.put('/sessions/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, description, category, date, time, maxParticipants, isPublic, managementCode } = req.body
+  const {
+    title,
+    description,
+    category,
+    date,
+    time,
+    maxParticipants,
+    isPublic,
+    managementCode
+  } = req.body;
+
+  
+  const session = db.prepare('SELECT * FROM sessions WHERE id = ?').get(id);
+  if (!session) {
+    return res.status(404).json({ error: 'Session not found' });
+  }
+  if (session.managementCode !== managementCode) {
+    return res.status(403).json({ error: 'Invalid management code' });
+  }
 
   const update = db.prepare(`
     UPDATE sessions
-    SET title = ?, description = ? , category = ? , date = ? , time = ? , maxParticipants =? , isPublic = ?
-    WHERE id = ? AND managementCode = ?
-    `)
+    SET title = ?, description = ?, category = ?, date = ?, time = ?, maxParticipants = ?, isPublic = ?
+    WHERE id = ?
+  `);
 
   const result = update.run(
     title,
@@ -86,16 +118,12 @@ app.put('/sessions/:id', (req, res) => {
     time,
     maxParticipants,
     isPublic,
-    id, 
-    managementCode
-  )
+    id
+  );
 
-  if (result.changes > 0) {
   res.json({ success: true, message: 'Session updated' });
-} else {
-  res.status(403).json({ error: 'Invalid management code or session not found' });
-}
-})
+});
+
 
 // DELETE /sessions/:id → delete a session (requires management code)
 app.delete('/sessions/:id', (req, res) => {
@@ -116,8 +144,31 @@ app.delete('/sessions/:id', (req, res) => {
 // 6. POST /sessions/:id/join → join a session (generates attendance code)
 app.post('/sessions/:id/join', (req,res) =>{
   const id = parseInt(req.params.id);
+  //Check maxParticipants of that session
+  const maxP = db.prepare (`
+    SELECT maxParticipants from sessions WHERE id = ?`)
+  const session = maxP.get(id)
+   if (!session) {
+    return res.status(404).json({ error: 'Session not found' });
+  }
+  const maxParticipants = session.maxParticipants;
+
+  //Check current Participants
+  const countP = db.prepare('SELECT COUNT(*) as count FROM participants WHERE sessionId = ?');
+  const countResult = countP.get(id);
+  const currentCount = countResult.count;
+
+
+  if (currentCount >= maxParticipants) {
+  return res.status(404).json({error: 'Session full'})
+}
+
+
   const attendanceCode = Math.random().toString(36).substring(2,8);
   const { name } = req.body
+  if (!name || name.trim() === '') {
+  return res.status(400).json({ error: 'Name is required' });
+}
   const insert = db.prepare(`
     INSERT INTO participants (sessionId, name, attendanceCode) VALUES (?, ?, ?)
     `)
@@ -133,14 +184,15 @@ app.post('/sessions/:id/join', (req,res) =>{
     message: 'Joined session successfully',
     attendanceCode
   });
-});
+}
+);
 
 // 7. DELETE /sessions/:id/leave → leave a session using attendance code
 app.delete('/sessions/:id/leave', (req,res) =>{
   const id = parseInt(req.params.id);
   const { name, attendanceCode } = req.body
   const deleteParticipant = db.prepare(`
-    DELETE participants WHERE id = ? AND name = ? AND attendanceCode = ?
+    DELETE FROM participants WHERE sessionId = ? AND name = ? AND attendanceCode = ?
     `)
 
     const result = deleteParticipant(id)
@@ -155,3 +207,21 @@ app.delete('/sessions/:id/leave', (req,res) =>{
 
 
 // 8. DELETE /sessions/:id/remove → remove a participant (requires management code)
+app.delete('/sessions/:id/remove', (req, res) => {
+  const sessionId = parseInt(req.params.id)
+  const { participantId, managementCode } = req.body
+
+
+   const session = db.prepare('SELECT * FROM sessions WHERE id = ?').get(sessionId);
+  if (!session || session.managementCode !== managementCode) {
+    return res.status(403).json({ error: 'Invalid management code' });
+  }
+  const deleteParticipant = db.prepare('DELETE FROM participants WHERE id = ? AND sessionId = ?');
+  const result = deleteParticipant.run(participantId, sessionId);
+
+  if (result.changes > 0) {
+    res.status(204).send()
+  } else {
+    res.status(404).json({ error: 'Not found' })
+  }
+})
