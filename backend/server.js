@@ -20,32 +20,35 @@ app.get('/sessions', (req, res) => {
   res.json(sessions)
 })
 
-// GET /sessions/:id → get details of one session
+// GET /sessions/:id → public session by ID
 app.get('/sessions/:id', (req, res) => {
   const id = parseInt(req.params.id);
- const session = db.prepare('SELECT * FROM sessions WHERE id = ?').get(sessionId);
+  const session = db.prepare('SELECT * FROM sessions WHERE id = ? AND isPublic = 1').get(id);
 
-  if (!session) {
-    return res.status(404).json({ error: 'Session not found' });
-  }
-  const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(sessionId);
-
-  session.currentParticipants = countResult.currentParticipants;
-
-  res.json(session);
-});
-
-// GET /sessions/private/:code → get details of a private session
-app.get('/sessions/:sessionId/:code', (req, res) => {
-  const code = req.params.code;
-  const session = db.prepare('SELECT * FROM sessions WHERE privateCode = ?').get(code);
-const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(session.id);
-  session.currentParticipants = countResult.currentParticipants;
   if (!session) return res.status(404).json({ error: 'Session not found' });
 
-  
+  // count current participants
+  const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(id);
+  session.currentParticipants = countResult.currentParticipants;
+
   res.json(session);
 });
+
+// GET /sessions/private/:code → private session by code
+app.get('/sessions/private/:code', (req, res) => {
+  const code = req.params.code;
+  const session = db.prepare('SELECT * FROM sessions WHERE privateCode = ?').get(code);
+
+  if (!session) return res.status(404).json({ error: 'Session not found' });
+
+  // count current participants
+  const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(session.id);
+  session.currentParticipants = countResult.currentParticipants;
+
+  res.json(session);
+});
+
+
 
 
 // POST /sessions → create a new session (and generate a management code)
@@ -188,22 +191,29 @@ app.post('/sessions/:id/join', (req,res) =>{
 );
 
 // 7. DELETE /sessions/:id/leave → leave a session using attendance code
-app.delete('/sessions/:id/leave', (req,res) =>{
-  const id = parseInt(req.params.id);
-  const { name, attendanceCode } = req.body
-  const deleteParticipant = db.prepare(`
-    DELETE FROM participants WHERE sessionId = ? AND name = ? AND attendanceCode = ?
-    `)
-
-    const result = deleteParticipant(id)
+app.delete('/sessions/:id/leave', (req, res) => {
+  const sessionId = parseInt(req.params.id);
+  const { attendanceCode } = req.body;
 
 
-   if (result.changes > 0) {
-    res.status(204).send() 
-   } else {
-    res.status(404).json({error: 'Could not leave the event'})
-   }
-  });
+  if (!attendanceCode) {
+    return res.status(400).json({ error: 'Attendance code is required' });
+  }
+
+  const participant = db
+    .prepare('SELECT * FROM participants WHERE sessionId = ? AND attendanceCode = ?')
+    .get(sessionId, attendanceCode);
+
+  if (!participant) {
+    return res.status(404).json({ error: 'Invalid attendance code or participant not found' });
+  }
+
+  db.prepare('DELETE FROM participants WHERE id = ?').run(participant.id);
+
+  res.json({ success: true, message: 'You have successfully left the session.' });
+});
+
+
 
 
 // 8. DELETE /sessions/:id/remove → remove a participant (requires management code)
