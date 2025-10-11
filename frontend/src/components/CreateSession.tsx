@@ -12,6 +12,7 @@ export default function CreateSessionForm() {
     maxParticipants: 1,
     isPublic: 1,
   });
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = e.target;
@@ -24,7 +25,7 @@ export default function CreateSessionForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3000/sessions", {
+    const res = await fetch("http://localhost:3000/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -34,7 +35,7 @@ export default function CreateSessionForm() {
     if (res.ok) {
     alert(`Session created! 
     Management code: ${data.managementCode}
-    ${!formData.isPublic ? `Private code: ${data.privateCode}` : ""}`);
+    ${!formData.isPublic ? `Private code: ${data.privateCode}` : ""} SessionID: ${data.sessionId}`);
 
       setFormData({
         title: "",

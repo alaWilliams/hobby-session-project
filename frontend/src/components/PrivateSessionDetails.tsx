@@ -9,14 +9,16 @@ export default function PrivateSessionDetails() {
   const [joined, setJoined] = useState(false);
   const [attendanceCode, setAttendanceCode] = useState("");
   const [error, setError] = useState("");
+  const [leaveMessage, setLeaveMessage] = useState("");
+  
 
   useEffect(() => {
     if (!privateCode) return;
 
-    fetch(`http://localhost:3000/sessions/private/${privateCode}`)
+    fetch(`http://localhost:3000/session/${privateCode}`)
       .then(res => res.json())
       .then(data => setSession(data))
-      .catch(err => setError("Could not load session"));
+      .catch(() => setError("Could not load session"));
   }, [privateCode]);
 
   if (!session) return <p>Loading session...</p>;
@@ -28,10 +30,10 @@ export default function PrivateSessionDetails() {
     if (!privateCode || isFull) return;
 
     setError("");
-    const res = await fetch(`http://localhost:3000/sessions/private/${privateCode}/join`, {
+    const res = await fetch(`http://localhost:3000/session/${privateCode}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, attendanceCode }),
     });
 
     const data = await res.json();
@@ -39,26 +41,31 @@ export default function PrivateSessionDetails() {
     if (res.ok) {
       setJoined(true);
       setAttendanceCode(data.attendanceCode);
-
-      // Reload session to update participant count
-      const updated = await fetch(`http://localhost:3000/sessions/private/${privateCode}`);
+         const updated = await fetch(`http://localhost:3000/session/${privateCode}`);
       const updatedSession = await updated.json();
       setSession(updatedSession);
-    } else {
-      setError(data.error || "Could not join session");
+    }else {
+      console.log('Cannot join session')
     }
+
   };
-  const handleLeave = async () => {
-  const res = await fetch(`http://localhost:3000/sessions/private/${privateCode}/leave`, {
+  const handleLeave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if(!attendanceCode.trim()) return;
+
+  const res = await fetch(`http://localhost:3000/session/${privateCode}/leave`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, attendanceCode }),
   });
 
+
   if (res.ok) {
     setJoined(false);
+    setLeaveMessage("You have left the session.");
+
     setAttendanceCode("");
-    const updated = await fetch(`http://localhost:3000/sessions/private/${privateCode}`);
+    const updated = await fetch(`http://localhost:3000/session/${privateCode}`);
     const updatedSession = await updated.json();
     setSession(updatedSession);
   } else {
@@ -90,6 +97,24 @@ export default function PrivateSessionDetails() {
           <button type="submit" disabled={isFull}>Join Session</button>
         </form>
       )}
+   <h3 className="text-lg font-semibold mt-4">Leave this session</h3>
+<form onSubmit={handleLeave} className="space-y-2 mt-2">
+  <input
+    type="text"
+    placeholder="Enter attendance code"
+    value={attendanceCode}
+    onChange={(e) => setAttendanceCode(e.target.value)}
+    className="border p-2 rounded w-full"
+  />
+  <button
+    type="submit"
+    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+  >
+    Leave Session
+  </button>
+  {leaveMessage && <p>{leaveMessage}</p>}
+</form>
+      
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );

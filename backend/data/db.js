@@ -21,7 +21,7 @@ db.exec(`
     sessionId INTEGER NOT NULL,
     name TEXT NOT NULL,
     attendanceCode TEXT NOT NULL,
-    FOREIGN KEY(sessionId) REFERENCES sessions(id)
+    FOREIGN KEY(sessionId) REFERENCES sessions(id) ON DELETE CASCADE
   );
 `);
 

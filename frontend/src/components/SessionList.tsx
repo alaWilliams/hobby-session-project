@@ -5,11 +5,16 @@ import type { Session } from "./types";
 export default function SessionList() {
   const [sessions, setSessions] = useState<Session[]>([]);
 
+    const fetchSessions = async () => {
+    const res = await fetch("http://localhost:3000/sessions");
+    const data = await res.json();
+    setSessions(data);
+  };
+
+
+
   useEffect(() => {
-    fetch("http://localhost:3000/sessions")
-      .then((res) => res.json())
-      .then(setSessions)
-      .catch(console.error);
+    fetchSessions();
   }, []);
 
   return (

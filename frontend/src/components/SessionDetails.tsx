@@ -56,7 +56,7 @@ export default function SessionDetails() {
   if (!attendanceCode.trim()) return;
 
   const res = await fetch(`http://localhost:3000/sessions/${sessionId}/leave`, {
-    method: "POST",
+    method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ attendanceCode: attendanceCode }),
   });
@@ -64,6 +64,7 @@ export default function SessionDetails() {
   const data = await res.json();
 
   if (res.ok) {
+    setJoined(false)
     setLeaveMessage("You have left the session.");
     setAttendanceCode("");
 

@@ -155,18 +155,24 @@ export default function SessionManagement() {
             name="isPublic"
             checked={formData.isPublic}
             onChange={handleChange}
+            disabled
           />
         </label>
       </div>
 
-      <h3>Participants</h3>
-      <ul>
-        {participants.map((p) => (
-          <li key={p.id}>
-            {p.name} <button onClick={() => handleDeleteParticipant(p.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+<h3>Participants:</h3>
+{participants.length === 0 ? (
+  <p>No participants</p>
+) : (
+  <ul>
+    {participants.map((p) => (
+      <li key={p.id}>
+        {p.name} 
+        <button onClick={() => handleDeleteParticipant(p.id)}>Delete</button>
+      </li>
+    ))}
+  </ul>
+)}
 
       <div>
         <button onClick={handleUpdate} disabled={!managementCode}>
