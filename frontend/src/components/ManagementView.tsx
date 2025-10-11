@@ -42,11 +42,20 @@ export default function SessionManagement() {
   if (loading || !session || !formData) return <p>Loading...</p>;
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => prev && ({ ...prev, [name]: type === "checkbox" ? checked : value }));
-  };
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value, type } = e.target;
+
+  let newValue: string | number | boolean = value;
+
+  if (type === "checkbox") {
+    const target = e.target as HTMLInputElement;
+    newValue = target.checked;
+  }
+
+  setFormData((prev) => prev && ({ ...prev, [name]: newValue }));
+};
+
 
   const handleUpdate = async () => {
     if (!formData || !managementCode) {

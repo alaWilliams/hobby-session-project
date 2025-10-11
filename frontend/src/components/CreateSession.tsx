@@ -10,17 +10,25 @@ export default function CreateSessionForm() {
     date: "",
     time: "",
     maxParticipants: 1,
-    isPublic: 1,
+    isPublic: true,
   });
-  
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value, type } = e.target;
+
+  let newValue: string | number | boolean = value;
+
+  if (type === "checkbox") {
+    const target = e.target as HTMLInputElement;
+    newValue = target.checked;
+  }
+
+  setFormData((prev) => prev && ({ ...prev, [name]: newValue }));
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
