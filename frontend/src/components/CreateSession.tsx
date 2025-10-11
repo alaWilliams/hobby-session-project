@@ -30,8 +30,12 @@ export default function CreateSessionForm() {
       body: JSON.stringify(formData),
     });
 
+    const data = await res.json();
     if (res.ok) {
-      alert(`Session created!`);
+    alert(`Session created! 
+    Management code: ${data.managementCode}
+    ${!formData.isPublic ? `Private code: ${data.privateCode}` : ""}`);
+
       setFormData({
         title: "",
         description: "",
