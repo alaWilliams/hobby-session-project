@@ -126,7 +126,7 @@ export default function SessionManagement() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Manage Session: {session.title}</h2>
 
       <input
@@ -173,11 +173,11 @@ export default function SessionManagement() {
 {participants.length === 0 ? (
   <p>No participants</p>
 ) : (
-  <ul>
+  <ul className="participant-lis">
     {participants.map((p) => (
       <li key={p.id}>
         {p.name} 
-        <button onClick={() => handleDeleteParticipant(p.id)}>Delete</button>
+        <button className="delete-btn" onClick={() => handleDeleteParticipant(p.id)}>Delete</button>
       </li>
     ))}
   </ul>

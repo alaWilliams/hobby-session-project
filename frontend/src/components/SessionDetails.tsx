@@ -78,19 +78,22 @@ export default function SessionDetails() {
 };
 
   return (
-    <div>
-      <h2>{session.title}</h2>
+    <div className="container">
+      <div className = "session-card" >
+        <h2>{session.title}</h2>
       <p>{session.description}</p>
       <p>
         {session.currentParticipants ?? 0} / {session.maxParticipants} participants
       </p>
+      </div>
+      
 
       {isFull ? (
-        <p style={{ color: "red", fontWeight: "bold" }}>This session is full.</p>
+        <p className="error">This session is full.</p>
       ) : joined ? (
-        <p>{name}, you have successfully joined this session! Your attendance code is: <strong>{attendanceCode}</strong></p>
+        <p className="info">{name}, you have successfully joined this session! Your attendance code is: <strong>{attendanceCode}</strong></p>
       ) : (
-        <form onSubmit={handleJoin}>
+        <form className="form" onSubmit={handleJoin}>
           <input
             type="text"
             placeholder="Your name"
@@ -103,22 +106,20 @@ export default function SessionDetails() {
           </button>
         </form>
       )}
-      <h3 className="text-lg font-semibold mt-4">Leave this session</h3>
-<form onSubmit={handleLeave} className="space-y-2 mt-2">
+      <h3>Leave this session</h3>
+<form onSubmit={handleLeave} className="form">
   <input
     type="text"
     placeholder="Enter attendance code"
     value={attendanceCode}
     onChange={(e) => setAttendanceCode(e.target.value)}
-    className="border p-2 rounded w-full"
   />
   <button
     type="submit"
-    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
   >
     Leave Session
   </button>
-  {leaveMessage && <p>{leaveMessage}</p>}
+  {leaveMessage && <p className="info">{leaveMessage}</p>}
 </form>
 
     </div>

@@ -6,11 +6,14 @@ import ManagementView from "./components/ManagementView";
 import Verify from "./components/Verify";
 import PrivateSessionDetails from "./components/PrivateSessionDetails";
 import JoinPrivateSession from "./components/JoinPrivateSession";
+import './App.css'
 
 
 function App() {
   return (
-    <Router>
+      <div className="app-container">
+        <Router>
+
       <nav style={{ marginBottom: "1rem" }}>
         <Link to="/">Sessions</Link> | <Link to="/private">Private Sessions </Link>
  | <Link to="/create">Create</Link> | <Link to="/verify">Manage Session</Link> | 
@@ -28,6 +31,8 @@ function App() {
     </Routes>
 
     </Router>
+      </div>
+    
   );
 }
 

@@ -76,17 +76,20 @@ export default function PrivateSessionDetails() {
 
 
   return (
-    <div>
-      <h2>{session.title}</h2>
+    <div className="container">
+      <div className="session-card">
+        <h2>{session.title}</h2>
       <p>{session.description}</p>
       <p>
         {session.currentParticipants ?? 0} / {session.maxParticipants} participants
       </p>
-      {isFull && <p style={{ color: "red" }}>This session is full.</p>}
+      </div>
+      
+      {isFull && <p className="error">This session is full.</p>}
       {joined ? (
-        <p>Your attendance code: <strong>{attendanceCode}</strong></p>
+        <p className="info">Your attendance code: <strong>{attendanceCode}</strong></p>
       ) : (
-        <form onSubmit={handleJoin}>
+        <form className="form" onSubmit={handleJoin}>
           <input
             type="text"
             placeholder="Your name"
@@ -98,13 +101,12 @@ export default function PrivateSessionDetails() {
         </form>
       )}
    <h3 className="text-lg font-semibold mt-4">Leave this session</h3>
-<form onSubmit={handleLeave} className="space-y-2 mt-2">
+<form className="form" onSubmit={handleLeave}>
   <input
     type="text"
     placeholder="Enter attendance code"
     value={attendanceCode}
     onChange={(e) => setAttendanceCode(e.target.value)}
-    className="border p-2 rounded w-full"
   />
   <button
     type="submit"
@@ -115,7 +117,7 @@ export default function PrivateSessionDetails() {
   {leaveMessage && <p>{leaveMessage}</p>}
 </form>
       
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }

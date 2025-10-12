@@ -60,7 +60,7 @@ export default function CreateSessionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form"onSubmit={handleSubmit}>
       <input
         name="title"
         type="text"

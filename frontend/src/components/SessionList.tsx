@@ -18,16 +18,17 @@ export default function SessionList() {
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <h1>Public Sessions</h1>
-      <ul>
+      <ul className='container'>
             {sessions.map((session) => (
-          <li key={session.id} className="session-item">
+          <li key={session.id} className="session-card">
+              <Link to={`/sessions/${session.id}`}>
+              <h3>{session.title}</h3>
             <p><strong>Category:</strong> {session.category}</p>
             <p><strong>Date:</strong> {session.date}</p>
             <p><strong>Time:</strong> {session.time}</p>
-            <Link to={`/sessions/${session.id}`}>
-              <h3>{session.title}</h3>
+          
             </Link>
           </li>
         ))}

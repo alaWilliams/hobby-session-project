@@ -1,42 +1,155 @@
+/* General layout */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f4f8; 
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
 #root {
-  max-width: 1280px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 0 auto
+
+}
+.app-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Session cards */
+.session-card {
+ background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100%; 
+  max-width: 500px;  
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.session-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.4rem;
+  color: #112a68;
+  cursor: pointer;
 }
 
-.card {
-  padding: 2em;
+.session-card p {
+  margin: 0.25rem 0;
+  color: #555;
 }
 
-.read-the-docs {
-  color: #888;
+/* Buttons */
+button {
+  cursor: pointer;
+  border: none;
+  padding: 0.55rem 1.2rem;
+  border-radius: 8px;
+  background-color: #1f3c88; /* deep blue */
+  color: #fff;
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #3a5dbf; /* lighter blue on hover */
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: #a0c4ff;
+  cursor: not-allowed;
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  padding: 0.55rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #3a5dbf;
+  outline: none;
+  box-shadow: 0 0 5px rgba(58, 93, 191, 0.4);
+}
+
+/* Participant list */
+.participant-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.participant-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.55rem 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.participant-list li:last-child {
+  border-bottom: none;
+}
+
+.participant-list .delete-btn {
+  background-color: #dc3545;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.participant-list .delete-btn:hover {
+  background-color: #a71d2a;
+}
+
+/* Messages */
+.error {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.info {
+  color: #1f3c88;
+  font-weight: bold;
+}
+li {
+  list-style-type: none;
 }

@@ -30,9 +30,9 @@ export default function Verify() {
   };
 
   return (
-    <div className="verify-management">
+    <div className="container">
       <h2>Enter Management Code</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <input
           type="text"
           value={managementCode}
@@ -50,7 +50,7 @@ export default function Verify() {
 
         <button type="submit">Manage Session</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }

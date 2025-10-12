@@ -32,7 +32,7 @@ export default function JoinPrivateSession() {
   };
 
   return (
-    <div className="join-private-session">
+    <div className="container">
       <h2>See details of a private session</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -44,7 +44,7 @@ export default function JoinPrivateSession() {
         />
         <button type="submit">Join</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }
