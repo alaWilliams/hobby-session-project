@@ -91,7 +91,7 @@ export default function SessionDetails() {
       {isFull ? (
         <p className="error">This session is full.</p>
       ) : joined ? (
-        <p className="info">{name}, you have successfully joined this session! Your attendance code is: <strong>{attendanceCode}</strong></p>
+        <p className="info">{name}, you have successfully joined this session! Your attendance code is: <strong className="message success">{attendanceCode}</strong></p>
       ) : (
         <form className="form" onSubmit={handleJoin}>
           <input

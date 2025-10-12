@@ -48,10 +48,8 @@ app.get('/sessions/:id/manage', (req, res) => {
 // GET /session/:code → private session by code
 app.get('/session/:privateCode', (req, res) => {
   const privateCode = req.params.privateCode;
-  console.log('Fetching private session:', privateCode);
 
   const session = db.prepare('SELECT * FROM sessions WHERE privateCode = ?').get(privateCode);
-  console.log('Found session:', session);
   if (!session) return res.status(404).json({ error: 'Session not found' });
 
   const countResult = db.prepare('SELECT COUNT(*) as currentParticipants FROM participants WHERE sessionId = ?').get(session.id);

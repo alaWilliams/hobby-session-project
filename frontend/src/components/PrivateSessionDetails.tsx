@@ -100,7 +100,7 @@ export default function PrivateSessionDetails() {
           <button type="submit" disabled={isFull}>Join Session</button>
         </form>
       )}
-   <h3 className="text-lg font-semibold mt-4">Leave this session</h3>
+   <h3>Leave this session</h3>
 <form className="form" onSubmit={handleLeave}>
   <input
     type="text"
@@ -110,7 +110,6 @@ export default function PrivateSessionDetails() {
   />
   <button
     type="submit"
-    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
   >
     Leave Session
   </button>

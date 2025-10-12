@@ -33,13 +33,7 @@ export default function Verify() {
     <div className="container">
       <h2>Enter Management Code</h2>
       <form className="form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={managementCode}
-          onChange={(e) => setManagementCode(e.target.value)}
-          placeholder="Enter management code"
-          required
-        />
+      
         <input
   type="number"
   value={sessionId}
@@ -47,6 +41,13 @@ export default function Verify() {
   placeholder="Enter session ID"
   required
 />
+  <input
+          type="text"
+          value={managementCode}
+          onChange={(e) => setManagementCode(e.target.value)}
+          placeholder="Enter management code"
+          required
+        />
 
         <button type="submit">Manage Session</button>
       </form>

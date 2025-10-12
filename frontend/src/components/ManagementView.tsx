@@ -10,7 +10,7 @@ export default function SessionManagement() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch session and participants together
+
   useEffect(() => {
     if (!sessionId) return;
 
@@ -173,11 +173,11 @@ export default function SessionManagement() {
 {participants.length === 0 ? (
   <p>No participants</p>
 ) : (
-  <ul className="participant-lis">
+  <ul className="participant-list">
     {participants.map((p) => (
       <li key={p.id}>
         {p.name} 
-        <button className="delete-btn" onClick={() => handleDeleteParticipant(p.id)}>Delete</button>
+        <button className="delete-btn" onClick={() => handleDeleteParticipant(p.id)}>Remove participant</button>
       </li>
     ))}
   </ul>

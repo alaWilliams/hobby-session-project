@@ -12,6 +12,9 @@ export default function CreateSessionForm() {
     maxParticipants: 1,
     isPublic: true,
   });
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
 
 
   const handleChange = (
@@ -32,6 +35,8 @@ export default function CreateSessionForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMessage("");
+    setErrorMessage("");
 
     const res = await fetch("http://localhost:3000/session", {
       method: "POST",
@@ -40,10 +45,11 @@ export default function CreateSessionForm() {
     });
 
     const data = await res.json();
-    if (res.ok) {
-    alert(`Session created! 
-    Management code: ${data.managementCode}
-    ${!formData.isPublic ? `Private code: ${data.privateCode}` : ""} SessionID: ${data.sessionId}`);
+      if (res.ok) {
+      setSuccessMessage(`Session created! 
+Management code: ${data.managementCode} 
+${!formData.isPublic ? `Private code: ${data.privateCode}` : ""} 
+Session ID: ${data.sessionId}`);
 
       setFormData({
         title: "",
@@ -55,9 +61,9 @@ export default function CreateSessionForm() {
         isPublic: true,
       });
     } else {
-      alert("Failed to create session");
+      setErrorMessage(data.error || "Failed to create session");
     }
-  };
+};
 
   return (
     <form className="form"onSubmit={handleSubmit}>
@@ -123,6 +129,10 @@ export default function CreateSessionForm() {
       </label>
 
       <button type="submit">Create Session</button>
+      {successMessage && <div className="message success">{successMessage}</div>}
+      {errorMessage && <div className="message error">{errorMessage}</div>} 
     </form>
+    
+
   );
 }
