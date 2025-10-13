@@ -64,6 +64,10 @@ Session ID: ${data.sessionId}`);
       setErrorMessage(data.error || "Failed to create session");
     }
 };
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard!')
+}
 
   return (
     <form className="form"onSubmit={handleSubmit}>
@@ -129,8 +133,19 @@ Session ID: ${data.sessionId}`);
       </label>
 
       <button type="submit">Create Session</button>
-      {successMessage && <div className="message success">{successMessage}</div>}
-      {errorMessage && <div className="message error">{errorMessage}</div>} 
+      {successMessage && (
+  <div className="message success">
+    {successMessage}
+    <button onClick={() => copyToClipboard(successMessage)}>Copy</button>
+  </div>
+)}
+
+{errorMessage && (
+  <div className="message error">
+    {errorMessage}
+  </div>
+)}
+
     </form>
     
 

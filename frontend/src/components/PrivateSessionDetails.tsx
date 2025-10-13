@@ -74,6 +74,11 @@ export default function PrivateSessionDetails() {
   }
 };
 
+  const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard!')
+}
+
 
   return (
     <div className="container">
@@ -87,7 +92,7 @@ export default function PrivateSessionDetails() {
       
       {isFull && <p className="error">This session is full.</p>}
       {joined ? (
-        <p className="info">Your attendance code: <strong>{attendanceCode}</strong></p>
+        <p className="info message">Your attendance code: <strong className="message success">{attendanceCode}</strong> <button onClick={() => copyToClipboard(attendanceCode)}>Copy</button></p>
       ) : (
         <form className="form" onSubmit={handleJoin}>
           <input

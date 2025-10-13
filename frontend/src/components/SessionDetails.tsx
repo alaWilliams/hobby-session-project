@@ -76,6 +76,10 @@ export default function SessionDetails() {
     setLeaveMessage(data.error || "Failed to leave the session.");
   }
 };
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard!')
+}
 
   return (
     <div className="container">
@@ -91,7 +95,7 @@ export default function SessionDetails() {
       {isFull ? (
         <p className="error">This session is full.</p>
       ) : joined ? (
-        <p className="info">{name}, you have successfully joined this session! Your attendance code is: <strong className="message success">{attendanceCode}</strong></p>
+        <p className="info">{name}, you have successfully joined this session! Your attendance code is: <strong className="message success">{attendanceCode}</strong> <button onClick={() => copyToClipboard(attendanceCode)}>Copy</button></p>
       ) : (
         <form className="form" onSubmit={handleJoin}>
           <input

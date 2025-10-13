@@ -9,6 +9,7 @@ export default function SessionManagement() {
   const [formData, setFormData] = useState<Form | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
+  
 
 
   useEffect(() => {
@@ -125,6 +126,7 @@ export default function SessionManagement() {
     }
   };
 
+
   return (
     <div className="container">
       <h2>Manage Session: {session.title}</h2>
@@ -176,8 +178,8 @@ export default function SessionManagement() {
   <ul className="participant-list">
     {participants.map((p) => (
       <li key={p.id}>
-        {p.name} 
-        <button className="delete-btn" onClick={() => handleDeleteParticipant(p.id)}>Remove participant</button>
+        {p.name} | {p.attendanceCode}
+        <button style={{marginLeft : "1.5rem"}} className="delete-btn"  onClick={() => handleDeleteParticipant(p.id)}>Remove participant</button>
       </li>
     ))}
   </ul>

@@ -15,7 +15,7 @@ function App() {
         <Router>
 
       <nav style={{ marginBottom: "1rem" }}>
-        <Link to="/">Sessions</Link> | <Link to="/private">Private Sessions </Link>
+        | <Link to="/">Sessions</Link> | <Link to="/private">Private Sessions </Link>
  | <Link to="/create">Create</Link> | <Link to="/verify">Manage Session</Link> | 
      </nav>
         <Routes>
